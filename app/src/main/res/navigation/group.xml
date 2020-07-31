@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/group"
+    app:startDestination="@id/create_group_fragment">
+
+    <fragment
+        android:id="@+id/create_group_fragment"
+        android:name="com.example.chat_application.group.create_group_fragment"
+        android:label="create_group_fragment"
+        tools:layout="@layout/create_group_fragment" />
+</navigation>
