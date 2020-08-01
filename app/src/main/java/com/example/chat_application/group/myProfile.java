@@ -48,7 +48,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.example.chat_application.singleton.firebase_init_singleton.getINSTANCE;
-
+import static com.example.chat_application.singleton.yourGroupSingleton.getYourGroupListInstance;
 
 
 public class myProfile extends AppCompatActivity implements owngroupInterface{
@@ -64,7 +64,7 @@ public class myProfile extends AppCompatActivity implements owngroupInterface{
     myProfile_adapter myProfile_adapter;
     ArrayList<String> joinedGroupListKey;
 
-    List<yourGroupData> yourGroupList;
+   // List<yourGroupData> yourGroupList;
 
     //use for tracking which group user opened
     static int yourGroupIntoPosition = -1;
@@ -74,6 +74,7 @@ public class myProfile extends AppCompatActivity implements owngroupInterface{
     Query newMessageQuery;
     ChildEventListener newMessageListener;
 
+    boolean breaks = false; //for breaking the loop in the listener;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -99,7 +100,7 @@ public class myProfile extends AppCompatActivity implements owngroupInterface{
         joinedGroupListKey = new ArrayList<>();
 
         load_data();
-
+        loadGroup();
 
     }
 
@@ -107,22 +108,25 @@ public class myProfile extends AppCompatActivity implements owngroupInterface{
     protected void onStart() {
         super.onStart();
 
-        loadGroup();
 
-      /*  //dynamic updating last message for which group user last entered and send a message
+
+        //dynamic updating last message for which group user last entered and send a message
        if(yourGroupIntoPosition != -1 && yourGroupIntoId != null){
 
            getINSTANCE().getRootRef().child("Users").child(currentUserID).child("joinedGroups").child(yourGroupIntoId).addListenerForSingleValueEvent(new ValueEventListener() {
                @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                @Override
                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                   getYourGroupListInstance().getYourGroupList().get(yourGroupIntoPosition).setLastmsgUserName(Objects.requireNonNull(dataSnapshot.child("lastmsgUserName").getValue()).toString());
-                   getYourGroupListInstance().getYourGroupList().get(yourGroupIntoPosition).setLastMessage(Objects.requireNonNull(dataSnapshot.child("lastMessage").getValue()).toString());
-                   getYourGroupListInstance().getYourGroupList().get(yourGroupIntoPosition).setLastmsgTime(Objects.requireNonNull(dataSnapshot.child("lastmsgTime").getValue()).toString());
-                  // getYourGroupListInstance().getYourGroupList().get(yourGroupIntoPosition).setMsgCountUser(Objects.requireNonNull(dataSnapshot.child("msgCountUser").getValue()).toString());
+                   if(dataSnapshot.hasChild("lastmsgUserName")){
+
+                       getYourGroupListInstance().getYourGroupList().get(yourGroupIntoPosition).setLastmsgUserName(Objects.requireNonNull(dataSnapshot.child("lastmsgUserName").getValue()).toString());
+                       getYourGroupListInstance().getYourGroupList().get(yourGroupIntoPosition).setLastMessage(Objects.requireNonNull(dataSnapshot.child("lastMessage").getValue()).toString());
+                       getYourGroupListInstance().getYourGroupList().get(yourGroupIntoPosition).setLastmsgTime(Objects.requireNonNull(dataSnapshot.child("lastmsgTime").getValue()).toString());
+                       myProfile_adapter.notifyDataSetChanged();
+
+                   }
 
 
-                   myProfile_adapter.notifyDataSetChanged();
                    yourGroupIntoPosition = -1;
                    yourGroupIntoId = null;
                }
@@ -132,7 +136,7 @@ public class myProfile extends AppCompatActivity implements owngroupInterface{
 
                }
            });
-       }*/
+       }
 
 
        //track new message dynamically
@@ -153,24 +157,42 @@ public class myProfile extends AppCompatActivity implements owngroupInterface{
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                for (int i=0; i<yourGroupList.size(); i++){
-                    if(yourGroupList.get(i).getGroupId().equals(dataSnapshot.getKey())){
+                  for (int i=0; i<getYourGroupListInstance().getYourGroupList().size(); i++){
+                    if(getYourGroupListInstance().getYourGroupList().get(i).getGroupId().equals(dataSnapshot.getKey())){
 
                         //updating last message
-                        yourGroupList.get(i).setLastmsgUserName(Objects.requireNonNull(dataSnapshot.child("lastmsgUserName").getValue()).toString());
-                        yourGroupList.get(i).setLastMessage(Objects.requireNonNull(dataSnapshot.child("lastMessage").getValue()).toString());
-                        yourGroupList.get(i).setLastmsgTime(Objects.requireNonNull(dataSnapshot.child("lastmsgTime").getValue()).toString());
+                        getYourGroupListInstance().getYourGroupList().get(i).setLastmsgUserName(Objects.requireNonNull(dataSnapshot.child("lastmsgUserName").getValue()).toString());
+                        getYourGroupListInstance().getYourGroupList().get(i).setLastMessage(Objects.requireNonNull(dataSnapshot.child("lastMessage").getValue()).toString());
+                        getYourGroupListInstance().getYourGroupList().get(i).setLastmsgTime(Objects.requireNonNull(dataSnapshot.child("lastmsgTime").getValue()).toString());
 
-                        /*// updating user message count
-                        long tempMessageCountUser =  Long.parseLong(yourGroupList.get(i).getMsgCountUser()) + 1;
-                        String messageCountUser = String.valueOf(tempMessageCountUser);
-                        yourGroupList.get(i).setMsgCountUser(messageCountUser);*/
+                        // updating user message count
+                        /*long tempMessageCountUser =  Long.parseLong(getYourGroupListInstance().getYourGroupList().get(i).getMsgCountUser()) + 1;
+                        String messageCountUser = String.valueOf(tempMessageCountUser);*/
 
-                        myProfile_adapter.notifyDataSetChanged();
+                        final int finalI = i;
+
+                        getINSTANCE().getRootRef().child("GROUP").child(dataSnapshot.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                getYourGroupListInstance().getYourGroupList().get(finalI).setMsgCount(Objects.requireNonNull(dataSnapshot.child("msgCount").getValue()).toString());
+                                yourGroupData temp =  getYourGroupListInstance().getYourGroupList().remove(finalI);
+                                getYourGroupListInstance().getYourGroupList().add(0,temp);
+
+                                myProfile_adapter.notifyDataSetChanged();
+                                breaks = true;
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                    if(breaks){
+                        breaks = false;
                         break;
                     }
                 }
-
             }
 
             @Override
@@ -193,8 +215,8 @@ public class myProfile extends AppCompatActivity implements owngroupInterface{
 
     private void loadGroup() {
 
-        yourGroupList = new ArrayList<>();
-        myProfile_adapter = new myProfile_adapter(myProfile.this,this, yourGroupList);
+       // yourGroupList = new ArrayList<>();
+        myProfile_adapter = new myProfile_adapter(myProfile.this,this, getYourGroupListInstance().getYourGroupList());
         group_list_recycle_view.setAdapter(myProfile_adapter);
 
         //getting last messages and message count(specific to current user not the group itself) for joined groups
@@ -215,33 +237,33 @@ public class myProfile extends AppCompatActivity implements owngroupInterface{
 
                           if(data.hasChild("msgCountUser")){ //if message counter available
                               groupData.setGroupId(data.getKey());
-                              yourGroupList.add(groupData);
+                              getYourGroupListInstance().getYourGroupList().add(groupData);
                           }else { //if no message counter available
                               groupData.setGroupId(data.getKey());
                               groupData.setMsgCountUser("0");
-                              yourGroupList.add(groupData);
+                              getYourGroupListInstance().getYourGroupList().add(groupData);
                           }
                       }
                   }else { //if no last message is available
                       groupData = new yourGroupData();
                       groupData.setGroupId(data.getKey());
-                      yourGroupList.add(groupData);
+                      getYourGroupListInstance().getYourGroupList().add(groupData);
                   }
               }
 
 
               //getting joined group information
-                for (int i=0; i<yourGroupList.size(); i++){
+                for (int i=0; i<getYourGroupListInstance().getYourGroupList().size(); i++){
 
                     final int finalI = i; //temp variable
-                    getINSTANCE().getRootRef().child("GROUP").child(yourGroupList.get(i).getGroupId()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    getINSTANCE().getRootRef().child("GROUP").child(getYourGroupListInstance().getYourGroupList().get(i).getGroupId()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            yourGroupList.get(finalI).setMsgCount(Objects.requireNonNull(dataSnapshot.child("msgCount").getValue()).toString());
-                            yourGroupList.get(finalI).setGroupName(Objects.requireNonNull(dataSnapshot.child("groupName").getValue()).toString());
+                            getYourGroupListInstance().getYourGroupList().get(finalI).setMsgCount(Objects.requireNonNull(dataSnapshot.child("msgCount").getValue()).toString());
+                            getYourGroupListInstance().getYourGroupList().get(finalI).setGroupName(Objects.requireNonNull(dataSnapshot.child("groupName").getValue()).toString());
 
                             if(dataSnapshot.hasChild("groupImage")){ //if has group image
-                                yourGroupList.get(finalI).setGroupImage(Objects.requireNonNull(dataSnapshot.child("groupImage").getValue()).toString());
+                                getYourGroupListInstance().getYourGroupList().get(finalI).setGroupImage(Objects.requireNonNull(dataSnapshot.child("groupImage").getValue()).toString());
                             }
 
                             //sending to adapter
@@ -465,6 +487,7 @@ public class myProfile extends AppCompatActivity implements owngroupInterface{
         yourGroupIntoId = group_data.getGroupId();
         Intent intent = new Intent(myProfile.this,group_host_activity.class);
         intent.putExtra("groupData",group_data);
+        intent.putExtra("position",position);
         startActivity(intent);
     }
 

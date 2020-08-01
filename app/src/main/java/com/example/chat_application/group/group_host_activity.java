@@ -35,6 +35,7 @@ public class group_host_activity extends AppCompatActivity {
     CircleImageView group_image;
     private yourGroupData current_group_data;
     public static long message_serial = 0L;
+    private int position;
 
 
 
@@ -56,6 +57,7 @@ public class group_host_activity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             current_group_data = (yourGroupData) extras.getSerializable("groupData");
+            position = extras.getInt("position");
             loadData(current_group_data);
 
 
@@ -88,5 +90,9 @@ public class group_host_activity extends AppCompatActivity {
 
     public yourGroupData getCurrent_group_data() {
         return current_group_data;
+    }
+
+    public int getPosition() {
+        return position;
     }
 }

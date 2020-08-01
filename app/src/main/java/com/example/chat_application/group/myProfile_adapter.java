@@ -1,6 +1,7 @@
 package com.example.chat_application.group;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -66,9 +67,11 @@ public class myProfile_adapter extends RecyclerView.Adapter<myProfile_adapter.my
 
             String concatMessage = UserName+": "+message;
             holder.last_message.setText(concatMessage);
+
             c.setTimeInMillis(tm*1000);
             date_time =  DateFormat.format("MMM d yyyy, h:mm a",c).toString();
             holder.time.setText(date_time);
+
 
         }else {
             holder.last_message.setText("");
@@ -91,6 +94,9 @@ public class myProfile_adapter extends RecyclerView.Adapter<myProfile_adapter.my
 
             if(tempNewMessageNumber != 0){
 
+                holder.last_message.setTypeface(null, Typeface.BOLD);
+                holder.time.setTypeface(null, Typeface.BOLD);
+
                 holder.messageCounter.setVisibility(View.VISIBLE);
                 if( tempNewMessageNumber < 100 ){
                     holder.messageCounter.setText(newMessageNumber);
@@ -100,6 +106,8 @@ public class myProfile_adapter extends RecyclerView.Adapter<myProfile_adapter.my
 
             }else {
                 holder.messageCounter.setVisibility(View.INVISIBLE);
+                holder.last_message.setTypeface(null, Typeface.NORMAL);
+                holder.time.setTypeface(null, Typeface.NORMAL);
             }
 
         }

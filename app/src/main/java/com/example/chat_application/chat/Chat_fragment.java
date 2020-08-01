@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.example.chat_application.singleton.firebase_init_singleton.getINSTANCE;
+import static com.example.chat_application.singleton.yourGroupSingleton.getYourGroupListInstance;
 import static java.util.Objects.requireNonNull;
 
 public class Chat_fragment extends Fragment {
@@ -55,7 +56,7 @@ public class Chat_fragment extends Fragment {
     private String lastMessegeOnScrolled;
     Query queryLoad;
     ChildEventListener quryloadChildListener;
-
+    int position;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -79,7 +80,7 @@ public class Chat_fragment extends Fragment {
 
         group_host_activity = (group_host_activity) requireActivity();
         groupId = group_host_activity.getCurrent_group_data().getGroupId();
-
+        position = group_host_activity.getPosition();
 
          chatList = new ArrayList<>();
         newchatList = new ArrayList<>();
@@ -124,6 +125,7 @@ public class Chat_fragment extends Fragment {
 
                 //updating last message count when user going offline for that user
                 getINSTANCE().getRootRef().child("Users").child(currentUser).child("joinedGroups").child(groupId).child("msgCountUser").setValue(groupMessageCount);
+                getYourGroupListInstance().getYourGroupList().get(position).setMsgCountUser(groupMessageCount);
 
             }
 
@@ -288,9 +290,11 @@ public class Chat_fragment extends Fragment {
                 //updating group message count for that group
                 Long TempCount = Long.parseLong(groupMessageCount) + 1;
                 groupMessageCount = String.valueOf(TempCount);
-                update.put("GROUP/"+groupId+"/msgCount",groupMessageCount);//update the new one
 
+                update.put("GROUP/"+groupId+"/msgCount",groupMessageCount);//update the new one
                 update.put("Users/"+currentUser+"/joinedGroups/"+groupId+"/msgCountUser",groupMessageCount);//update the user message count
+                getYourGroupListInstance().getYourGroupList().get(position).setMsgCountUser(groupMessageCount);
+                getYourGroupListInstance().getYourGroupList().get(position).setMsgCount(groupMessageCount);
 
                 /*//create object for last message
                 final yourGroupData assignLastMessage = new yourGroupData(groupMessageCount,currentUserName,message,date_time);
