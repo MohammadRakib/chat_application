@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -44,19 +45,25 @@ public class Chat_fragment extends Fragment {
     private RecyclerView chat_recycle_view;
     private AppCompatImageButton upload, send;
     private EditText messageBox;
+    private TextView seeNewMessage;
+
     private String chat_message, currentUser, currentUserName, currentUserImage;
     private String groupId;
     private  String groupMessageCount;
-    private int currentItem, TotalItem, checkTopItem;
+    private int  checkTopItem;
+
     private group_host_activity group_host_activity;
+
     private chat_adapter chat_adapter;
     private List<chat_message_data> chatList, newchatList;
     private LinearLayoutManager layoutManager;
     private boolean isScrolling, flag, firsLoad = true;
     private String lastMessegeOnScrolled;
+
     Query queryLoad;
     ChildEventListener quryloadChildListener;
-    int position;
+
+    int position, newMessageNumber;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -75,12 +82,15 @@ public class Chat_fragment extends Fragment {
         upload = view.findViewById(R.id.upload_image);
         send = view.findViewById(R.id.send_message);
         messageBox = view.findViewById(R.id.Chat_edit_text);
+        seeNewMessage = view.findViewById(R.id.seeNewMessages);
 
         currentUser = requireNonNull(getINSTANCE().getMAuth().getCurrentUser()).getUid();
 
+        //getting data from activity
         group_host_activity = (group_host_activity) requireActivity();
         groupId = group_host_activity.getCurrent_group_data().getGroupId();
         position = group_host_activity.getPosition();
+        newMessageNumber = group_host_activity.getNewMessageNumber();
 
          chatList = new ArrayList<>();
         newchatList = new ArrayList<>();
@@ -104,6 +114,14 @@ public class Chat_fragment extends Fragment {
             public void onClick(View v) {
                  chat_message = messageBox.getText().toString().trim();
                  sendMessage(chat_message);
+            }
+        });
+
+        seeNewMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chat_recycle_view.smoothScrollToPosition(requireNonNull(chat_recycle_view.getAdapter()).getItemCount() - newMessageNumber);
+                seeNewMessage.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -158,6 +176,14 @@ public class Chat_fragment extends Fragment {
     }
 
     private void loadMessage() {
+
+        if(newMessageNumber > 0){
+            seeNewMessage.setVisibility(View.VISIBLE);
+            String concate = newMessageNumber+" New Messages";
+            seeNewMessage.setText(concate);
+        }else {
+            seeNewMessage.setVisibility(View.INVISIBLE);
+        }
 
         queryLoad = getINSTANCE().getRootRef().child("groupMessage").child(groupId)
                 .limitToLast(12);

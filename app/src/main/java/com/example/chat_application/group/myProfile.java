@@ -482,12 +482,13 @@ public class myProfile extends AppCompatActivity implements owngroupInterface{
 
 
     @Override
-    public void onclick_own_group(yourGroupData group_data, int position) {
+    public void onclick_own_group(yourGroupData group_data, int position, int newMessage) {
         yourGroupIntoPosition = position;
         yourGroupIntoId = group_data.getGroupId();
         Intent intent = new Intent(myProfile.this,group_host_activity.class);
         intent.putExtra("groupData",group_data);
         intent.putExtra("position",position);
+        intent.putExtra("newMessage",newMessage);
         startActivity(intent);
     }
 

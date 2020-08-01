@@ -35,6 +35,7 @@ public class myProfile_adapter extends RecyclerView.Adapter<myProfile_adapter.my
     private List<yourGroupData> groupDataList;
     private final Calendar c = Calendar.getInstance(Locale.getDefault());
     private String date_time;
+    String newMessageNumber;
 
     myProfile_adapter(Context context, owngroupInterface owngroupInterface, List<yourGroupData> groupDataList) {
         this.context = context;
@@ -89,7 +90,7 @@ public class myProfile_adapter extends RecyclerView.Adapter<myProfile_adapter.my
             long tempMessageCount = Long.parseLong(messageCount);
             long tempMessageCountUser = Long.parseLong(messageCountUser);
             long tempNewMessageNumber = tempMessageCount - tempMessageCountUser;
-            String newMessageNumber = String.valueOf(tempNewMessageNumber);
+            newMessageNumber = String.valueOf(tempNewMessageNumber);
 
 
             if(tempNewMessageNumber != 0){
@@ -131,7 +132,7 @@ public class myProfile_adapter extends RecyclerView.Adapter<myProfile_adapter.my
             @Override
             public void onClick(View v) {
 
-                owngroupInterface.onclick_own_group(groupData,position);
+                owngroupInterface.onclick_own_group(groupData,position,Integer.parseInt(newMessageNumber));
             }
         });
 

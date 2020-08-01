@@ -36,6 +36,7 @@ public class group_host_activity extends AppCompatActivity {
     private yourGroupData current_group_data;
     public static long message_serial = 0L;
     private int position;
+    private int newMessageNumber;
 
 
 
@@ -58,6 +59,7 @@ public class group_host_activity extends AppCompatActivity {
         if (extras != null) {
             current_group_data = (yourGroupData) extras.getSerializable("groupData");
             position = extras.getInt("position");
+            newMessageNumber = extras.getInt("newMessage");
             loadData(current_group_data);
 
 
@@ -94,5 +96,9 @@ public class group_host_activity extends AppCompatActivity {
 
     public int getPosition() {
         return position;
+    }
+
+    public int getNewMessageNumber() {
+        return newMessageNumber;
     }
 }
