@@ -35,7 +35,8 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         if(currentUser != null){
             Intent intent = new Intent(MainActivity.this, myProfile.class);
-            startActivity(intent);        }
+            startActivity(intent);
+        }
 
     }
 
