@@ -356,12 +356,6 @@ public class Chat_fragment extends Fragment {
                     public void onCancelled(@NonNull DatabaseError databaseError) { }
                 });
 
-
-
-                /*update.put("GROUP/"+groupId+"/lastmsgUserName",currentUserName);
-                update.put("GROUP/"+groupId+"/lastMessage",message);
-                update.put("GROUP/"+groupId+"/lastmsgTime",date_time);*/
-
             }
     }
 

@@ -113,10 +113,6 @@ public class myProfile_adapter extends RecyclerView.Adapter<myProfile_adapter.my
 
         }
 
-           /* holder.messageCounter.setVisibility(View.VISIBLE);
-            holder.messageCounter.setText(messageCount);
-*/
-
          ///loading image
 
         if(groupData.getGroupImage() != null){

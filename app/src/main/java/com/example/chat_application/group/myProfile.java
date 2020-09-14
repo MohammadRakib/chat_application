@@ -62,7 +62,7 @@ public class myProfile extends AppCompatActivity implements owngroupInterface{
     RecyclerView group_list_recycle_view;
     Toolbar mainToolbar;
     myProfile_adapter myProfile_adapter;
-    ArrayList<String> joinedGroupListKey;
+   // ArrayList<String> joinedGroupListKey;
 
    // List<yourGroupData> yourGroupList;
 
@@ -97,7 +97,7 @@ public class myProfile extends AppCompatActivity implements owngroupInterface{
         currentUserID = Objects.requireNonNull(getINSTANCE().getMAuth().getCurrentUser()).getUid();
         UserProfileImagesRef = FirebaseStorage.getInstance().getReference("profileImage");
 
-        joinedGroupListKey = new ArrayList<>();
+       // joinedGroupListKey = new ArrayList<>();
 
         load_data();
         loadGroup();
@@ -286,58 +286,6 @@ public class myProfile extends AppCompatActivity implements owngroupInterface{
             }
         });
 
-
-
-
-
-    /*addChildEventListener(new ChildEventListener() {
-            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if(dataSnapshot.exists()){
-
-                    getINSTANCE().getRootRef().child("GROUP").child(Objects.requireNonNull(dataSnapshot.getKey())).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                            group_data groupData = dataSnapshot.getValue(group_data.class);
-                            groupList.add(groupData);
-                            myProfile_adapter.notifyDataSetChanged();
-
-
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-
-*/
 
     }
 

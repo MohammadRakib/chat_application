@@ -36,8 +36,6 @@ public class group_list_adapter extends FirebaseRecyclerAdapter<group_data,group
 
    private group_list_interface group_list_interface;
    private Context context;
-    private final Calendar c = Calendar.getInstance(Locale.getDefault());
-    private String date_time;
 
 
 
